@@ -10,17 +10,29 @@ public class GUI extends JFrame {
     
     private static final long serialVersionUID = -6218820567019985015L;
     private final List<JButton> cells = new ArrayList<>();
-    private int counter = 0;
+
+    private final Logic logic;
+
+    private int getIndex(int size, Pair<Integer, Integer> position) {
+        return (position.getY() * size) + position.getX();
+    }
     
     public GUI(int size) {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setSize(50*size, 50*size);
+
+        logic = new LogicImpl(new Pair<Integer,Integer>(size, size));
+        logic.begin();
         
         JPanel panel = new JPanel(new GridLayout(size,size));
         this.getContentPane().add(panel);
         
         ActionListener al = e -> {
-        	this.cells.get(counter).setText(String.valueOf(counter++));
+        	this.cells.get(getIndex(size, logic.getPosition())).setText(String.valueOf(logic.getNumber()));
+            boolean isGoing = logic.nextStep();
+            if(!isGoing) {
+                System.exit(0);
+            }
         };
                 
         for (int i=0; i<size; i++){
